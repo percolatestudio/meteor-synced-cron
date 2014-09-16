@@ -1,0 +1,239 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+		]
+	},
+	"build_system": "",
+	"command_palette":
+	{
+		"height": 58.0,
+		"selected_items":
+		[
+			[
+				"syjson",
+				"Set Syntax: JSON"
+			],
+			[
+				"conv",
+				"Indentation: Convert to Spaces"
+			],
+			[
+				"syjava",
+				"Set Syntax: JavaScript"
+			]
+		],
+		"width": 392.0
+	},
+	"console":
+	{
+		"height": 0.0
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"file_history":
+	[
+		"/R/sync.js",
+		"/R/meteor-synced-cron/synced-cron-server.js",
+		"/R/meteor-synced-cron/package.js",
+		"/R/meteor-synced-cron/README.md",
+		"/R/README.md",
+		"/R/meteor-synced-cron/synced-cron-tests.js",
+		"/R/productsauce-api/server/methods/services/new/list.js",
+		"/R/productsauce-api/server/api/magento/callback.js",
+		"/R/productsauce-api/server/methods/services/magento/addnew.js",
+		"/R/productsauce-api/server/methods/services/new.js",
+		"/R/productsauce-api/server/import/categories.js",
+		"/R/productsauce-api/server/api/aden/stores/stores.js",
+		"/R/productsauce-api/server/api/aden/orders/complete.js",
+		"/R/productsauce-api/server/api/aden/orders/list.js",
+		"/R/productsauce-api/server/api/aden/orders/new.js",
+		"/R/productsauce-api/server/api/aden/orders/orders.js",
+		"/R/productsauce-api/server/api/aden/orders.js",
+		"/R/productsauce-api/server/api/aden/customers.js",
+		"/R/productsauce-api/server/api/aden/categories.js",
+		"/R/productsauce-api/server/api/aden/product/details.js",
+		"/R/productsauce-api/server/api/aden/product/exists.js",
+		"/R/productsauce-api/server/api/aden/product/interchange.js",
+		"/R/productsauce-api/server/api/aden/product/list.js",
+		"/R/productsauce-api/server/api/aden/product/errors.js",
+		"/R/productsauce-api/server/api/aden/product/remove.js",
+		"/R/productsauce-api/server/api/aden/product/update.js",
+		"/R/productsauce-api/server/api/aden/product/new.js",
+		"/R/productsauce-api/server/api/aden/product.js",
+		"/D/Users/oRiCLe/Documents/GitHub/think-magentolink/newcustomers.php",
+		"/R/productsauce-api/server/cron/cron-changes.js",
+		"/R/productsauce-api/server/api/aden/stores.js",
+		"/R/productsauce-api/server/api/aden/upload.js",
+		"/R/productsauce-api/server/api/_common.js",
+		"/C/Users/Aaron/Documents/GitHub/mage-mod-productsauce/app/code/local/ThinkSoft/ProductSauce/controllers/ProductController.php",
+		"/C/Users/Aaron/AppData/Roaming/Sublime Text 2/Packages/Default/Preferences.sublime-settings",
+		"/C/Users/Aaron/AppData/Roaming/Sublime Text 2/Packages/User/Preferences.sublime-settings",
+		"//oricle-mac/GitHub/productsauce-api/productsauce-api.sublime-project",
+		"//oricle-mac/GitHub/productsauce-api/productsauce-api.sublime-workspace",
+		"/C/Users/Aaron/Clients/JustJap/items.phtml",
+		"/C/Users/Aaron/Clients/Potal/convertcsv.json",
+		"/C/Users/Aaron/Desktop/cameragear.txt",
+		"/C/Users/Aaron/Clients/Potal/convertcsv.txt",
+		"/C/Users/Aaron/Clients/JustJap/default.phtml",
+		"/C/Users/Aaron/Clients/JustJap/view.phtml",
+		"/C/Users/Aaron/Desktop/todo.txt",
+		"/C/Users/Aaron/Desktop/Prusa3ALU-FREZOVANY-v4.dxf",
+		"/C/Users/Aaron/Downloads/files.txt",
+		"/C/Users/Aaron/Documents/Arduino/GSM_GPRS_GPS_Shield_GSMSHIELD/README",
+		"/Z/gmsPrice/Setup/pricesetup.nsi",
+		"/F/Websites/trending-news-multipurpose-magazine-theme/Trending News Theme/Dummy Content/trendingnews.xml",
+		"/C/Users/Aaron/Documents/Websites/SHChamber.com.au/pm/Connections/PowerMailerConnection.php",
+		"/C/Users/Aaron/Downloads/Printer/tensioner/GT2_mount-6mm_nut_export.gcode",
+		"/C/Users/Aaron/Projects/productsauce/README.md",
+		"/C/Users/Aaron/Projects/productsauce/app/code/local/ThinkSoft/ProductSauce/controllers/ProductController.php",
+		"/C/Users/Aaron/Projects/productsauce/app/code/local/ThinkSoft/ProductSauce/controllers/OrderController.php",
+		"/C/Users/Aaron/Projects/productsauce/ResizedImage600304-Untitled.png",
+		"/C/Users/Aaron/Projects/productsauce/no-image.jpg",
+		"/C/Users/Aaron/Projects/productsauce/app/code/local/ThinkSoft/ProductSauce/Helper/Authentication.php",
+		"/C/Users/Aaron/Projects/productsauce/app/code/local/ThinkSoft/ProductSauce/controllers/CategoryController.php",
+		"/C/Users/Aaron/Desktop/setup.sh",
+		"/C/Users/Aaron/Desktop/digitalocean-public-key",
+		"/C/Users/Aaron/Desktop/MashUp_Repo-v1.7/repository.mash2k3/addon.xml",
+		"//beyonwizt3/Root/etc/enigma2/userbouquet.favourites.tv",
+		"/C/Users/Aaron/Desktop/stl/AO-101__Budaschnozzle_fan_for_the_hotends_not_the_print_itself/AO-101__Budaschnozzle_fan_for_the_hotends_not_the_print_itself/AO-101_budaschnozzle_fan.gcode",
+		"//beyonwizt3/Root/etc/enigma2/userbouquet.cartoons.tv",
+		"/C/Python27/virtual/jb/download.csv",
+		"/C/Python27/virtual/jb/page01.csv",
+		"/C/Python27/virtual/jb/page03.csv",
+		"/C/Python27/virtual/jb/page02.csv",
+		"/C/Python27/virtual/jb/page04.csv",
+		"/C/Python27/virtual/jb/page05.csv",
+		"/C/Python27/virtual/jb/page06.csv",
+		"/C/Python27/virtual/jb/page07.csv",
+		"/C/Python27/virtual/jb/page08.csv",
+		"/C/Python27/virtual/jb/page10.csv",
+		"/C/Python27/virtual/jb/page09.csv",
+		"/C/Python27/virtual/jb/page12.csv",
+		"/C/Python27/virtual/jb/page11.csv",
+		"/C/projects/WORKS/test.html",
+		"/C/Users/Aaron/Desktop/1channel/plugin.py",
+		"/C/Users/Aaron/Desktop/1channel/jsunpack.py",
+		"/C/Users/Aaron/Desktop/1channel/__init__.py",
+		"/C/Users/Aaron/Desktop/1channel/res_firedrive.py",
+		"/C/Python27/virtual/jb/page13.csv",
+		"/C/projects/WORKS/eserver.cfg",
+		"/C/projects/WORKS/OEServer/Conf/wrapper.conf",
+		"/C/projects/WORKS/OEServer/InstallApp-NT.bat",
+		"/C/projects/Strongs/Revparam",
+		"/C/Users/Aaron/Downloads/Adobe Photoshop Lightroom 5.2 Final (64 bit) [ChingLiu]/ChingLiu.Install.Notes.nfo"
+	],
+	"find":
+	{
+		"height": 40.0
+	},
+	"find_in_files":
+	{
+		"height": 0.0,
+		"where_history":
+		[
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+			"owner",
+			"split(",
+			"},",
+			"\";\n",
+			"M0",
+			"@pause",
+			"return",
+			"\n#",
+			"$$",
+			"../",
+			",..,"
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+			"explode(",
+			"}",
+			"return;",
+			"\\$",
+			"http://dat1337:606_i198@www.jbroper.com/",
+			""
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"incremental_find":
+	{
+		"height": 0.0
+	},
+	"input":
+	{
+		"height": 38.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"replace":
+	{
+		"height": 74.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"show_minimap": true,
+	"show_open_files": false,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 240.0,
+	"status_bar_visible": true
+}

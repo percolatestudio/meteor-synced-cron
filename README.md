@@ -2,6 +2,8 @@
 
 A simple cron system for [Meteor](http://meteor.com). It supports syncronizing jobs between multiple processes.
 
+Updated with some extra features for `_id` on jobs, `list` and `remove` functions.
+
 ## Installation
 
 ``` sh

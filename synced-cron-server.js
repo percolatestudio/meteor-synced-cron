@@ -75,6 +75,10 @@ SyncedCron.remove = function(jobName) {
   // remove a cron job by its Id or Name fields
   for (var item in this._entries) {
     if (this._entries[item]._id === jobName || this._entries[item].name === jobName) {
+      if (this._entries[item]._timer) {
+        this._entries[item]._timer.clear();
+        this._entries[item]._timer = null;
+      }
       this._entries.splice(item, 1);
       return true;
     }

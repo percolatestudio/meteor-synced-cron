@@ -4,7 +4,8 @@ SyncedCron = {
   options: {
     log: true,
     collectionName: 'cronHistory',
-    utc: false //default to using localTime
+    utc: false, //default to using localTime
+    autoStart: false // allow autostart cron jobs as added
   }
 }
 
@@ -30,37 +31,91 @@ var log = {
 
 // add a scheduled job
 // SyncedCron.add({
+//   id: String, //*optional* id of job for reference
 //   name: String, //*required* unique name of the job
 //   schedule: function(laterParser) {},//*required* when to run the job
 //   job: function() {}, //*required* the code to run
 // });
+
 SyncedCron.add = function(entry) {
+  
+  // add a reference ID to the cron job for management later, allow it to be custom
+  // otherwise default to a UUID string.
+  if (!entry._id)
+    entry._id = Meteor.uuid();
+
+  // check
   check(entry.name, String);
   check(entry.schedule, Function);
   check(entry.job, Function);
 
-  // check
+  // insert
   this._entries.push(entry);
-}
+
+  // if autoStart is set in flags, start the unstarted cron job
+  if (this.options.autoStart)
+    this.start(true);
+
+  // return the ID of the scheduled task for future use
+  return entry._id;
+
+};
+
+SyncedCron.list = function() {
+ 
+  //return list of current entries in the cron list
+  return _.map(this._entries, function(entry) {
+    return _.omit(entry, ['_timer', 'job']);
+  });
+
+};
+
+SyncedCron.remove = function(jobName) {
+
+  // remove a cron job by its Id or Name fields
+  for (var item in this._entries) {
+    if (this._entries[item]._id === jobName || this._entries[item].name === jobName) {
+      if (this._entries[item]._timer) {
+        this._entries[item]._timer.clear();
+        this._entries[item]._timer = null;
+      }
+      this._entries.splice(item, 1);
+      return true;
+    }
+  }
+  return false;
+};
 
 // Start processing added jobs
-SyncedCron.start = function() {
+SyncedCron.start = function(onlyNew) {
   var self = this;
+  
+  // if onlyNew not set, set it to false
+  if (!onlyNew)
+    onlyNew = false
 
   // Schedule each job with later.js
   this._entries.forEach(function(entry) {
-    var schedule = entry.schedule(Later.parse);
-    entry._timer = self._laterSetInterval(self._entryWrapper(entry), schedule);
+    // check if onlyNew set, only create timers for new items not existing
+    if ((onlyNew && !entry._timer) || !onlyNew) {
 
-    log.info('SyncedCron: scheduled "' + entry.name + '" next run @' 
-      + Later.schedule(schedule).next(1));
+      var schedule = entry.schedule(Later.parse);
+      entry._timer = self._laterSetInterval(self._entryWrapper(entry), schedule);
+      
+      // simple flag to reference started and non started within list
+      entry.active = true;
+
+      log.info('SyncedCron: scheduled "' + entry.name + '" next run @' 
+        + Later.schedule(schedule).next(1));
+    }
   });
 }
 
 // Return the next scheduled date of the first matching entry or undefined
 SyncedCron.nextScheduledAtDate = function (jobName) {
   var entry = _.find(this._entries, function(entry) {
-    return entry.name === jobName;
+    // allow for ID to be passed as job name for next scheduled date
+    return entry.name === jobName || entry._id === jobName;
   });
   
   if (entry)
@@ -84,6 +139,7 @@ SyncedCron._entryWrapper = function(entry) {
     var jobHistory = {
       intendedAt: intendedAt,
       name: entry.name,
+      job_id: entry._id,
       startedAt: new Date()
     };
 

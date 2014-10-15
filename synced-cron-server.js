@@ -226,8 +226,10 @@ SyncedCron._laterSetTimeout = function(fn, sched) {
 
     // minimum time to fire is one second, use next occurrence instead
     if(diff < 1000) {
-      diff = next[1].getTime() - now;
-      intendedAt = next[1];
+        if(next[1]){
+        diff = next[1].getTime() - now;
+        intendedAt = next[1];
+      }
     }
 
     if(diff < 2147483647) {

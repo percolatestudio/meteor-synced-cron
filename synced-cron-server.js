@@ -5,7 +5,10 @@ SyncedCron = {
   options: {
     //Log job run details to console
     log: true,
-
+    
+    // run job in async fashion
+    isAsync:false,
+    
     //Name of collection to use for synchronisation and logging
     collectionName: 'cronHistory',
 
@@ -156,15 +159,24 @@ SyncedCron._entryWrapper = function(entry) {
     // run and record the job
     try {
       log.info('SyncedCron: Starting "' + entry.name + '".');
-      var output = entry.job(intendedAt); // <- Run the actual job
+     
+      function onFinish(output) {
+        log.info('SyncedCron: Finished "' + entry.name + '".');
+        self._collection.update({_id: jobHistory._id}, {
+          $set: {
+            finishedAt: new Date(),
+            output: output
+          }
+        })
+      }
 
-      log.info('SyncedCron: Finished "' + entry.name + '".');
-      self._collection.update({_id: jobHistory._id}, {
-        $set: {
-          finishedAt: new Date(),
-          result: output
-        }
-      });
+      if(SyncedCron.options.isAsync){
+        entry.job(intendedAt, onFinish)
+      }else{
+        var output = entry.job(intendedAt); // <- Run the actual job
+        onFinish(output)
+      }
+
     } catch(e) {
       log.info('SyncedCron: Exception "' + entry.name +'" ' + e.stack);
       self._collection.update({_id: jobHistory._id}, {

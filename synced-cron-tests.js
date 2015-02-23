@@ -131,3 +131,41 @@ Tinytest.add('SyncedCron.add starts by it self when running', function(test) {
   test.equal(SyncedCron.running, false);
   test.equal(_.keys(SyncedCron._entries).length, 0);
 });
+
+
+Tinytest.add('Removing current entry inside job prevents the next event from running', function(test) {
+  //! Preparation
+
+  SyncedCron.add({
+    name: "testRemove",
+    schedule: function (parser) {
+      return parser.recur().every(1).second();
+    },
+    job: function () {
+      console.log("TEST");
+      SyncedCron.remove("testRemove");
+    }
+  });
+
+  //! Should test that "TEST" is only output to log once
+});
+
+Tinytest.add('Automatically remove entry after last event in schedule has been triggered', function(test) {
+  //! Preparation
+
+  SyncedCron.add({
+    name: "testRemove",
+    schedule: function (parser) {
+      var date = new Date;
+      date.setSeconds(date.getSeconds() + 2);
+
+      return parser.recur().on(date).fullDate();
+    },
+    job: function () {
+      console.log("TEST");
+    }
+  });
+
+  //! Should test that "TEST" is only output to log once
+  // and that "testRemove" is removed after 2 seconds
+});

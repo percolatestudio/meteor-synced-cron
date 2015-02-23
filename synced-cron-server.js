@@ -56,7 +56,7 @@ var log = {
 var scheduleEntry = function(entry) {
   var schedule = entry.schedule(Later.parse);
   entry._timer = 
-    SyncedCron._laterSetInterval(SyncedCron._entryWrapper(entry), schedule);
+    SyncedCron._laterSetInterval(SyncedCron._entryWrapper(entry), schedule, entry.name);
 
   log.info('SyncedCron: scheduled "' + entry.name + '" next run @'
     + Later.schedule(schedule).next(1));
@@ -193,9 +193,9 @@ SyncedCron._reset = function() {
 //   between multiple, potentially laggy and unsynced machines
 
 // From: https://github.com/bunkat/later/blob/master/src/core/setinterval.js
-SyncedCron._laterSetInterval = function(fn, sched) {
+SyncedCron._laterSetInterval = function(fn, sched, name) {
 
-  var t = SyncedCron._laterSetTimeout(scheduleTimeout, sched),
+  var t = SyncedCron._laterSetTimeout(scheduleTimeout, sched, name),
       done = false;
 
   /**
@@ -203,10 +203,12 @@ SyncedCron._laterSetInterval = function(fn, sched) {
   * interval.
   */
   function scheduleTimeout(intendedAt) {
-    if(!done) {
+    if (!done)
       fn(intendedAt);
-      t = SyncedCron._laterSetTimeout(scheduleTimeout, sched);
-    }
+
+    // Check for done again, in case entry is removed inside job function body
+    if (!done)
+      t = SyncedCron._laterSetTimeout(scheduleTimeout, sched, name);
   }
 
   return {
@@ -224,7 +226,7 @@ SyncedCron._laterSetInterval = function(fn, sched) {
 };
 
 // From: https://github.com/bunkat/later/blob/master/src/core/settimeout.js
-SyncedCron._laterSetTimeout = function(fn, sched) {
+SyncedCron._laterSetTimeout = function(fn, sched, name) {
 
   var s = Later.schedule(sched), t;
   scheduleTimeout();
@@ -236,21 +238,29 @@ SyncedCron._laterSetTimeout = function(fn, sched) {
   */
   function scheduleTimeout() {
     var now = Date.now(),
-        next = s.next(2, now),
-        diff = next[0].getTime() - now,
-        intendedAt = next[0];
+        next = s.next(2, now);
 
-    // minimum time to fire is one second, use next occurrence instead
-    if(diff < 1000) {
-      diff = next[1].getTime() - now;
-      intendedAt = next[1];
-    }
+    if (next) {
+      var diff = next[0].getTime() - now,
+          intendedAt = next[0];
 
-    if(diff < 2147483647) {
-      t = Meteor.setTimeout(function() { fn(intendedAt); }, diff);
+      // minimum time to fire is one second, use next occurrence instead
+      if(next[1] && diff < 1000) {
+        diff = next[1].getTime() - now;
+        intendedAt = next[1];
+      }
+
+      if(diff < 2147483647) {
+        t = Meteor.setTimeout(function() { fn(intendedAt); }, diff);
+      }
+      else {
+        t = Meteor.setTimeout(scheduleTimeout, 2147483647);
+      }
     }
     else {
-      t = Meteor.setTimeout(scheduleTimeout, 2147483647);
+      log.info('SyncedCron: No more future events for "' + name + '".');
+
+      SyncedCron.remove(name);
     }
   }
 

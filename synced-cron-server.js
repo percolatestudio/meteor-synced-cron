@@ -12,7 +12,7 @@ SyncedCron = {
     collectionName: 'cronHistory',
 
     //Default to using localTime
-    utc: false,
+    timezone: 'utc',
 
     //TTL in seconds for history records in collection to expire
     //NOTE: Unset to remove expiry but ensure you remove the index from
@@ -25,6 +25,37 @@ SyncedCron = {
 }
 
 Later = Npm.require('later');
+tz = Npm.require("timezone");
+​
+Later.date.timezone = function(timezone) {
+  var _tz;
+  _tz = Npm.require("timezone/" + timezone);
+  later.date.build = function(Y, M, D, h, m, s) {
+    return new Date(tz([Y, M + 1, D, h, m, s], _tz, timezone));
+  };
+  later.date.getYear = function() {
+    return +tz(this, "%Y", _tz, timezone);
+  };
+  later.date.getMonth = function() {
+    return +tz(this, "%-m", _tz, timezone) - 1;
+  };
+  later.date.getDate = function() {
+    return +tz(this, "%-d", _tz, timezone);
+  };
+  later.date.getDay = function() {
+    return +tz(this, "%-w", _tz, timezone);
+  };
+  later.date.getHour = function() {
+    return +tz(this, "%-H", _tz, timezone);
+  };
+  later.date.getMin = function() {
+    return +tz(this, "%-M", _tz, timezone);
+  };
+  later.date.getSec = function() {
+    return +tz(this, "%-S", _tz, timezone);
+  };
+  return later.date.isUTC = false;
+};
 
 /*
   Logger factory function. Takes a prefix string and options object
@@ -80,10 +111,13 @@ Meteor.startup(function() {
   var minTTL = 300;
 
   // Use UTC or localtime for evaluating schedules
-  if (options.utc)
+  if (options.timezone === "utc")
     Later.date.UTC();
-  else
+  else if (options.timezone === "localtime") {
     Later.date.localTime();
+  } else {
+    Later.date.timezone(options.timezone)
+  };
 
   // collection holding the job history records
   SyncedCron._collection = new Mongo.Collection(options.collectionName);
@@ -99,7 +133,7 @@ Meteor.startup(function() {
 });
 
 var scheduleEntry = function(entry) {
-  var schedule = entry.schedule(Later.parse);
+  var schedule = entry.schedule.call(entry.context, Later.parse);
   entry._timer =
     SyncedCron._laterSetInterval(SyncedCron._entryWrapper(entry), schedule);
 
@@ -117,6 +151,8 @@ SyncedCron.add = function(entry) {
   check(entry.name, String);
   check(entry.schedule, Function);
   check(entry.job, Function);
+  entry.context = typeof entry.context === "object" ? entry.context : {};
+  entry.timezone = typeof entry.timezone === "string" ? entry.timezone : null;
 
   // check
   if (!this._entries[entry.name]) {
@@ -147,6 +183,7 @@ SyncedCron.nextScheduledAtDate = function(jobName) {
   var entry = this._entries[jobName];
 
   if (entry)
+    this._setTimezone(entry.timezone);
     return Later.schedule(entry.schedule(Later.parse)).next(1);
 }
 
@@ -182,6 +219,17 @@ SyncedCron.stop = function() {
   this.running = false;
 }
 
+SyncedCron._setTimezone = function(timezone){
+  if (timezone === "utc")
+    Later.date.UTC();
+  else if (timezone === "localtime") {
+    Later.date.localTime();
+  } else if (typeof timezone === "string"){
+    Later.date.timezone(options.timezone)
+  } else {
+    SyncedCron._setTimezone(this.options.timezone);
+  };
+};
 // The meat of our logic. Checks if the specified has already run. If not,
 // records that it's running the job, runs it, and records the output
 SyncedCron._entryWrapper = function(entry) {
@@ -212,7 +260,7 @@ SyncedCron._entryWrapper = function(entry) {
     // run and record the job
     try {
       log.info('Starting "' + entry.name + '".');
-      var output = entry.job(intendedAt); // <- Run the actual job
+      var output = entry.job.call(entry.context, intendedAt); // <- Run the actual job
 
       log.info('Finished "' + entry.name + '".');
       self._collection.update({_id: jobHistory._id}, {

@@ -26,35 +26,34 @@ SyncedCron = {
 
 Later = Npm.require('later');
 tz = Npm.require("timezone");
-​
 Later.date.timezone = function(timezone) {
   var _tz;
   _tz = Npm.require("timezone/" + timezone);
-  later.date.build = function(Y, M, D, h, m, s) {
+  Later.date.build = function(Y, M, D, h, m, s) {
     return new Date(tz([Y, M + 1, D, h, m, s], _tz, timezone));
   };
-  later.date.getYear = function() {
+  Later.date.getYear = function() {
     return +tz(this, "%Y", _tz, timezone);
   };
-  later.date.getMonth = function() {
+  Later.date.getMonth = function() {
     return +tz(this, "%-m", _tz, timezone) - 1;
   };
-  later.date.getDate = function() {
+  Later.date.getDate = function() {
     return +tz(this, "%-d", _tz, timezone);
   };
-  later.date.getDay = function() {
+  Later.date.getDay = function() {
     return +tz(this, "%-w", _tz, timezone);
   };
-  later.date.getHour = function() {
+  Later.date.getHour = function() {
     return +tz(this, "%-H", _tz, timezone);
   };
-  later.date.getMin = function() {
+  Later.date.getMin = function() {
     return +tz(this, "%-M", _tz, timezone);
   };
-  later.date.getSec = function() {
+  Later.date.getSec = function() {
     return +tz(this, "%-S", _tz, timezone);
   };
-  return later.date.isUTC = false;
+  return Later.date.isUTC = false;
 };
 
 /*

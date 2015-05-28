@@ -1,5 +1,5 @@
 Package.describe({
-  summary: "FORK of Synced-Cron with Timezone Support. Allows you to define and run scheduled jobs across multiple servers.",
+  summary: "Fork of original w/ timezone support. Define and run scheduled jobs across multiple servers.",
   version: "1.2.2",
   name: "trever:synced-cron",
   git: "https://github.com/trever/meteor-synced-cron.git"
@@ -15,6 +15,6 @@ Package.onUse(function (api) {
 });
 
 Package.onTest(function (api) {
-  api.use(['percolate:synced-cron', 'tinytest']);
+  api.use(['trever:synced-cron', 'tinytest']);
   api.add_files('synced-cron-tests.js', ['server']);
 });

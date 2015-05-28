@@ -1,8 +1,8 @@
 Package.describe({
-  summary: "Allows you to define and run scheduled jobs across multiple servers.",
-  version: "1.2.1",
-  name: "percolate:synced-cron",
-  git: "https://github.com/percolatestudio/meteor-synced-cron.git"
+  summary: "FORK of Synced-Cron with Timezone Support. Allows you to define and run scheduled jobs across multiple servers.",
+  version: "1.2.2",
+  name: "trever:synced-cron",
+  git: "https://github.com/trever/meteor-synced-cron.git"
 });
 
 Npm.depends({later: "1.1.6"});

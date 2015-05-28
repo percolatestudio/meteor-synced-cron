@@ -17,11 +17,18 @@ To write a cron job, give it a unique name, a schedule an a function to run like
 ``` js
 SyncedCron.add({
   name: 'Crunch some important numbers for the marketing department',
+  timezone: 'America/New_York',
+  context: {
+    userID: 'xyz'
+  },
   schedule: function(parser) {
+    this.magic = true // Context is accesible here as this context.
     // parser is a later.parse object
     return parser.text('every 2 hours');
   },
   job: function() {
+    console.log(this.userID) // Context Object becomes this argument
+    console.log(this.magic) / 
     var numbersCrunched = CrushSomeNumbers();
     return numbersCrunched;
   }
@@ -72,8 +79,8 @@ You can configure SyncedCron with the `config` method. Defaults are:
     // Name of collection to use for synchronisation and logging
     collectionName: 'cronHistory',
 
-    // Default to using localTime
-    utc: false,
+    // Default to localTime
+    timeline: 'utc' | 'localtime' | 'America/New_York',
 
     /*
       TTL in seconds for history records in collection to expire

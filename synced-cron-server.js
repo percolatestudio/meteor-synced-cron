@@ -12,7 +12,7 @@ SyncedCron = {
     collectionName: 'cronHistory',
 
     //Default to using localTime
-    timezone: 'utc',
+    timezone: 'America/New_York',
 
     //TTL in seconds for history records in collection to expire
     //NOTE: Unset to remove expiry but ensure you remove the index from
@@ -114,8 +114,12 @@ Meteor.startup(function() {
     Later.date.UTC();
   else if (options.timezone === "localtime") {
     Later.date.localTime();
+  } else if (typeof options.timezone === "function"){
+    Later.date.timezone(options.timezone.apply(options))
+  } else if (typeof options.timezone === "string") {
+    Later.date.timezone(options.timezone);
   } else {
-    Later.date.timezone(options.timezone)
+    Later.date.localTime();
   };
 
   // collection holding the job history records
@@ -132,9 +136,9 @@ Meteor.startup(function() {
 });
 
 var scheduleEntry = function(entry) {
+  SyncedCron._setTimezone(entry.timezone);
   var schedule = entry.schedule.call(entry.context, Later.parse);
-  entry._timer =
-    SyncedCron._laterSetInterval(SyncedCron._entryWrapper(entry), schedule);
+  entry._timer = SyncedCron._laterSetInterval(SyncedCron._entryWrapper(entry), schedule);
 
   log.info('Scheduled "' + entry.name + '" next run @'
     + Later.schedule(schedule).next(1));
@@ -151,7 +155,7 @@ SyncedCron.add = function(entry) {
   check(entry.schedule, Function);
   check(entry.job, Function);
   entry.context = typeof entry.context === "object" ? entry.context : {};
-  entry.timezone = typeof entry.timezone === "string" ? entry.timezone : null;
+  entry.timezone = typeof entry.timezone === "string" || typeof entry.timezone === "function" ? entry.timezone : null;
 
   // check
   if (!this._entries[entry.name]) {
@@ -182,7 +186,7 @@ SyncedCron.nextScheduledAtDate = function(jobName) {
   var entry = this._entries[jobName];
 
   if (entry)
-    this._setTimezone(entry.timezone);
+    this._setTimezone(entry.timezone, entry);
     return Later.schedule(entry.schedule(Later.parse)).next(1);
 }
 
@@ -218,15 +222,17 @@ SyncedCron.stop = function() {
   this.running = false;
 }
 
-SyncedCron._setTimezone = function(timezone){
+SyncedCron._setTimezone = function(timezone, entry){
   if (timezone === "utc")
     Later.date.UTC();
   else if (timezone === "localtime") {
     Later.date.localTime();
-  } else if (typeof timezone === "string"){
-    Later.date.timezone(options.timezone)
+  } else if (typeof timezone === "function"){
+    Later.date.timezone(options.timezone.apply(entry.context))
+  } else if (typeof timezone === "string") {
+    Later.date.timezone(timezone);
   } else {
-    SyncedCron._setTimezone(this.options.timezone);
+    Later.date.localTime();
   };
 };
 // The meat of our logic. Checks if the specified has already run. If not,

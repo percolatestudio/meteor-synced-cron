@@ -136,7 +136,7 @@ Meteor.startup(function() {
 });
 
 var scheduleEntry = function(entry) {
-  SyncedCron._setTimezone(entry.timezone);
+  SyncedCron._setTimezone(entry.timezone, entry);
   var schedule = entry.schedule.call(entry.context, Later.parse);
   entry._timer = SyncedCron._laterSetInterval(SyncedCron._entryWrapper(entry), schedule);
 
@@ -228,7 +228,7 @@ SyncedCron._setTimezone = function(timezone, entry){
   else if (timezone === "localtime") {
     Later.date.localTime();
   } else if (typeof timezone === "function"){
-    Later.date.timezone(options.timezone.apply(entry.context))
+    Later.date.timezone(timezone.apply(entry.context))
   } else if (typeof timezone === "string") {
     Later.date.timezone(timezone);
   } else {

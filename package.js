@@ -1,6 +1,6 @@
 Package.describe({
   summary: "Fork of original w/ timezone support. Define and run scheduled jobs across multiple servers.",
-  version: "1.2.4",
+  version: "1.2.6",
   name: "trever:synced-cron",
   git: "https://github.com/trever/meteor-synced-cron.git"
 });

@@ -1,11 +1,11 @@
 Package.describe({
   summary: "Fork of original w/ timezone support. Define and run scheduled jobs across multiple servers.",
-  version: "1.2.3",
+  version: "1.2.4",
   name: "trever:synced-cron",
   git: "https://github.com/trever/meteor-synced-cron.git"
 });
 
-Npm.depends({later: "1.1.6"});
+Npm.depends({later: "1.1.6", timezone:'0.0.41'});
 
 Package.onUse(function (api) {
   api.versionsFrom('METEOR@0.9.1.1');

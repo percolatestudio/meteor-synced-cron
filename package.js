@@ -15,6 +15,6 @@ Package.onUse(function(api) {
 });
 
 Package.onTest(function(api) {
-  api.use(['saucecode:synced-cron', 'tinytest']);
+  api.use(['saucecode:timezoned-synced-cron', 'tinytest']);
   api.addFiles('synced-cron-tests.js', ['server']);
 });

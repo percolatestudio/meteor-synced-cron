@@ -11,8 +11,8 @@ SyncedCron = {
     //Name of collection to use for synchronisation and logging
     collectionName: 'cronHistory',
 
-    //Default to using localTime
-    timezone: 'America/New_York',
+    //Default to using UTC
+    timezone: 'utc',
 
     //TTL in seconds for history records in collection to expire
     //NOTE: Unset to remove expiry but ensure you remove the index from
@@ -25,34 +25,48 @@ SyncedCron = {
 }
 
 Later = Npm.require('later');
-tz = Npm.require("timezone");
+tz = Npm.require('timezone');
 Later.date.timezone = function(timezone) {
   var _tz;
-  _tz = Npm.require("timezone/" + timezone);
+
+  // Workaround for UTC which is false
+  if (!timezone) {
+    timezone = 'Etc/UTC';
+  }
+
+  _tz = Npm.require('timezone/' + timezone);
   Later.date.build = function(Y, M, D, h, m, s) {
     return new Date(tz([Y, M + 1, D, h, m, s], _tz, timezone));
   };
+
   Later.date.getYear = function() {
-    return +tz(this, "%Y", _tz, timezone);
+    return +tz(this, '%Y', _tz, timezone);
   };
+
   Later.date.getMonth = function() {
-    return +tz(this, "%-m", _tz, timezone) - 1;
+    return +tz(this, '%-m', _tz, timezone) - 1;
   };
+
   Later.date.getDate = function() {
-    return +tz(this, "%-d", _tz, timezone);
+    return +tz(this, '%-d', _tz, timezone);
   };
+
   Later.date.getDay = function() {
-    return +tz(this, "%-w", _tz, timezone);
+    return +tz(this, '%-w', _tz, timezone);
   };
+
   Later.date.getHour = function() {
-    return +tz(this, "%-H", _tz, timezone);
+    return +tz(this, '%-H', _tz, timezone);
   };
+
   Later.date.getMin = function() {
-    return +tz(this, "%-M", _tz, timezone);
+    return +tz(this, '%-M', _tz, timezone);
   };
+
   Later.date.getSec = function() {
-    return +tz(this, "%-S", _tz, timezone);
+    return +tz(this, '%-S', _tz, timezone);
   };
+
   return Later.date.isUTC = false;
 };
 
@@ -71,7 +85,7 @@ function createLogger(prefix) {
   check(prefix, String);
 
   // Return noop if logging is disabled.
-  if(SyncedCron.options.log === false) {
+  if (SyncedCron.options.log === false) {
     return function() {};
   }
 
@@ -81,7 +95,7 @@ function createLogger(prefix) {
 
     var logger = SyncedCron.options && SyncedCron.options.logger;
 
-    if(logger && _.isFunction(logger)) {
+    if (logger && _.isFunction(logger)) {
 
       logger({
         level: level,
@@ -110,13 +124,13 @@ Meteor.startup(function() {
   var minTTL = 300;
 
   // Use UTC or localtime for evaluating schedules
-  if (options.timezone === "utc")
+  if (options.timezone === 'utc')
     Later.date.UTC();
-  else if (options.timezone === "localtime") {
+  else if (options.timezone === 'localtime') {
     Later.date.localTime();
-  } else if (typeof options.timezone === "function"){
+  } else if (typeof options.timezone === 'function') {
     Later.date.timezone(options.timezone.apply(options))
-  } else if (typeof options.timezone === "string") {
+  } else if (typeof options.timezone === 'string') {
     Later.date.timezone(options.timezone);
   } else {
     Later.date.localTime();
@@ -129,13 +143,17 @@ Meteor.startup(function() {
   if (options.collectionTTL) {
     if (options.collectionTTL > minTTL)
       SyncedCron._collection._ensureIndex({startedAt: 1 },
-        { expireAfterSeconds: options.collectionTTL } );
+        { expireAfterSeconds: options.collectionTTL });
     else
       log.warn('Not going to use a TTL that is shorter than:' + minTTL);
   }
 });
 
 var scheduleEntry = function(entry) {
+  if (!entry.timezone) {
+    entry.timezone = SyncedCron.options.timezone || 'utc';
+  }
+
   SyncedCron._setTimezone(entry.timezone, entry);
   var schedule = entry.schedule.call(entry.context, Later.parse);
   entry._timer = SyncedCron._laterSetInterval(SyncedCron._entryWrapper(entry), schedule);
@@ -154,8 +172,8 @@ SyncedCron.add = function(entry) {
   check(entry.name, String);
   check(entry.schedule, Function);
   check(entry.job, Function);
-  entry.context = typeof entry.context === "object" ? entry.context : {};
-  entry.timezone = typeof entry.timezone === "string" || typeof entry.timezone === "function" ? entry.timezone : null;
+  entry.context = typeof entry.context === 'object' ? entry.context : {};
+  entry.timezone = typeof entry.timezone === 'string' || typeof entry.timezone === 'function' ? entry.timezone : null;
 
   // check
   if (!this._entries[entry.name]) {
@@ -177,6 +195,7 @@ SyncedCron.start = function() {
     _.each(self._entries, function(entry) {
       scheduleEntry(entry);
     });
+
     self.running = true;
   });
 }
@@ -187,7 +206,7 @@ SyncedCron.nextScheduledAtDate = function(jobName) {
 
   if (entry)
     this._setTimezone(entry.timezone, entry);
-    return Later.schedule(entry.schedule(Later.parse)).next(1);
+  return Later.schedule(entry.schedule(Later.parse)).next(1);
 }
 
 // Remove and stop the entry referenced by jobName
@@ -210,6 +229,7 @@ SyncedCron.pause = function() {
     _.each(this._entries, function(entry) {
       entry._timer.clear();
     });
+
     this.running = false;
   }
 }
@@ -219,22 +239,24 @@ SyncedCron.stop = function() {
   _.each(this._entries, function(entry, name) {
     SyncedCron.remove(name);
   });
+
   this.running = false;
 }
 
 SyncedCron._setTimezone = function(timezone, entry){
-  if (timezone === "utc")
+  if (timezone === 'utc')
     Later.date.UTC();
-  else if (timezone === "localtime") {
+  else if (timezone === 'localtime') {
     Later.date.localTime();
-  } else if (typeof timezone === "function"){
+  } else if (typeof timezone === 'function'){
     Later.date.timezone(timezone.apply(entry.context))
-  } else if (typeof timezone === "string") {
+  } else if (typeof timezone === 'string') {
     Later.date.timezone(timezone);
   } else {
     Later.date.localTime();
   };
 };
+
 // The meat of our logic. Checks if the specified has already run. If not,
 // records that it's running the job, runs it, and records the output
 SyncedCron._entryWrapper = function(entry) {
@@ -251,7 +273,7 @@ SyncedCron._entryWrapper = function(entry) {
     // this job.
     try {
       jobHistory._id = self._collection.insert(jobHistory);
-    } catch(e) {
+    } catch (e) {
       // http://www.mongodb.org/about/contributors/error-codes/
       // 11000 == duplicate key error
       if (e.name === 'MongoError' && e.code === 11000) {
@@ -274,7 +296,7 @@ SyncedCron._entryWrapper = function(entry) {
           result: output
         }
       });
-    } catch(e) {
+    } catch (e) {
       log.info('Exception "' + entry.name +'" ' + e.stack);
       self._collection.update({_id: jobHistory._id}, {
         $set: {
@@ -312,7 +334,7 @@ SyncedCron._laterSetInterval = function(fn, sched) {
   * interval.
   */
   function scheduleTimeout(intendedAt) {
-    if(!done) {
+    if (!done) {
       fn(intendedAt);
       t = SyncedCron._laterSetTimeout(scheduleTimeout, sched);
     }
@@ -350,15 +372,14 @@ SyncedCron._laterSetTimeout = function(fn, sched) {
         intendedAt = next[0];
 
     // minimum time to fire is one second, use next occurrence instead
-    if(diff < 1000) {
+    if (diff < 1000) {
       diff = next[1].getTime() - now;
       intendedAt = next[1];
     }
 
-    if(diff < 2147483647) {
+    if (diff < 2147483647) {
       t = Meteor.setTimeout(function() { fn(intendedAt); }, diff);
-    }
-    else {
+    } else {
       t = Meteor.setTimeout(scheduleTimeout, 2147483647);
     }
   }
@@ -375,4 +396,5 @@ SyncedCron._laterSetTimeout = function(fn, sched) {
   };
 
 };
+
 // ---------------------------------------------------------------------------

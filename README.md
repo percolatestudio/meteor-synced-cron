@@ -1,11 +1,11 @@
-# percolate:synced-cron
+# saucecode:timezoned-synced-cron
 
-A simple cron system for [Meteor](http://meteor.com). It supports syncronizing jobs between multiple processes. In other words, if you add a job that runs every hour and your deployment consists of multiple app servers, only one of the app servers will execute the job each time (whichever tries first).
+A fork of [percolate:synced-cron](https://atmospherejs.com/percolate/synced-cron) and [trever:synced-cron](https://atmospherejs.com/trever/synced-cron).  Timezone implementation that successfully defaults to UTC and is backwards compatible to percolate:synced-cron.  A simple cron system for [Meteor](http://meteor.com). It supports syncronizing jobs between multiple processes. In other words, if you add a job that runs every hour and your deployment consists of multiple app servers, only one of the app servers will execute the job each time (whichever tries first).
 
 ## Installation
 
 ``` sh
-$ meteor add percolate:synced-cron
+$ meteor add saucecode:timezoned-synced-cron
 ```
 
 ## API
@@ -17,7 +17,7 @@ To write a cron job, give it a unique name, a schedule an a function to run like
 ``` js
 SyncedCron.add({
   name: 'Crunch some important numbers for the marketing department',
-  timezone: 'America/New_York',
+  timezone: 'Australia/Sydney',
   context: {
     userID: 'xyz'
   },
@@ -28,7 +28,7 @@ SyncedCron.add({
   },
   job: function() {
     console.log(this.userID) // Context Object becomes this argument
-    console.log(this.magic) / 
+    console.log(this.magic) /
     var numbersCrunched = CrushSomeNumbers();
     return numbersCrunched;
   }
@@ -64,6 +64,20 @@ Call `SyncedCron.stop()` to remove and stop all jobs.
 
 Call `SyncedCron.pause()` to stop all jobs without removing them.  The existing jobs can be rescheduled (i.e. restarted) with `SyncedCron.start()`.
 
+### Capturing user timezones
+
+Use [em0ney:jstz](https://atmospherejs.com/em0ney/jstz) to capture your user's timezone string.  Save this to their user profile and even allow them to edit it using [joshowens:timezone-picker](https://atmospherejs.com/joshowens/timezone-picker).  [Good blog post by Josh Owens on timezones in meteor](http://joshowens.me/dealing-with-timezones-in-javascript/).
+
+``` js
+SyncedCron.add({
+  name: 'User Defined Job',
+  timezone: 'Australia/Sydney',
+  ...
+```
+
+Then use this timezone configuration in your jobs, wherever their schedules are set by a user.
+
+
 ### Configuration
 
 You can configure SyncedCron with the `config` method. Defaults are:
@@ -80,7 +94,9 @@ You can configure SyncedCron with the `config` method. Defaults are:
     collectionName: 'cronHistory',
 
     // Default to localTime
-    timeline: 'utc' | 'localtime' | 'America/New_York',
+    // Options: 'utc', 'localtime', or specific timezones 'America/New_York'
+    // Will be applied to jobs with no timezone defined
+    timezone: 'utc',
 
     /*
       TTL in seconds for history records in collection to expire

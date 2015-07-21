@@ -367,7 +367,7 @@ SyncedCron._laterSetTimeout = function(fn, sched, scheduleOffset) {
   * attempting to schedule the timeout again.
   */
   function scheduleTimeout() {
-    var now = Date.now() + scheduleOffset,
+    var now = Date.now() - scheduleOffset,
         next = s.next(2, now),
         diff = next[0].getTime() - now,
         intendedAt = next[0];

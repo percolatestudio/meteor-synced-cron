@@ -160,7 +160,7 @@ var scheduleEntry = function(entry) {
   entry._timer = SyncedCron._laterSetInterval(SyncedCron._entryWrapper(entry), schedule, scheduleOffset);
 
   log.info('Scheduled "' + entry.name + '" next run @'
-    + new Date(Later.schedule(schedule).next(1) + scheduleOffset));
+    + new Date(Later.schedule(schedule).next(1).getTime() + scheduleOffset));
 }
 
 // add a scheduled job
@@ -207,7 +207,7 @@ SyncedCron.nextScheduledAtDate = function(jobName) {
   var scheduleOffset = entry.scheduleOffset || 0;
   if (entry)
     this._setTimezone(entry.timezone, entry);
-  return Later.schedule(entry.schedule(Later.parse)).next(1) + scheduleOffset;
+  return new Date(Later.schedule(entry.schedule(Later.parse)).next(1).getTime() + scheduleOffset);
 }
 
 // Remove and stop the entry referenced by jobName

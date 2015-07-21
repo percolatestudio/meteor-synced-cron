@@ -156,10 +156,11 @@ var scheduleEntry = function(entry) {
 
   SyncedCron._setTimezone(entry.timezone, entry);
   var schedule = entry.schedule.call(entry.context, Later.parse);
-  entry._timer = SyncedCron._laterSetInterval(SyncedCron._entryWrapper(entry), schedule);
+  var scheduleOffset = entry.scheduleOffset || 0;
+  entry._timer = SyncedCron._laterSetInterval(SyncedCron._entryWrapper(entry), schedule, scheduleOffset);
 
   log.info('Scheduled "' + entry.name + '" next run @'
-    + Later.schedule(schedule).next(1));
+    + new Date(Later.schedule(schedule).next(1) - scheduleOffset));
 }
 
 // add a scheduled job
@@ -203,10 +204,10 @@ SyncedCron.start = function() {
 // Return the next scheduled date of the first matching entry or undefined
 SyncedCron.nextScheduledAtDate = function(jobName) {
   var entry = this._entries[jobName];
-
+  var scheduleOffset = entry.scheduleOffset || 0;
   if (entry)
     this._setTimezone(entry.timezone, entry);
-  return Later.schedule(entry.schedule(Later.parse)).next(1);
+  return Later.schedule(entry.schedule(Later.parse)).next(1) - scheduleOffset;
 }
 
 // Remove and stop the entry referenced by jobName
@@ -243,7 +244,7 @@ SyncedCron.stop = function() {
   this.running = false;
 }
 
-SyncedCron._setTimezone = function(timezone, entry){
+SyncedCron._setTimezone = function(timezone, entry) {
   if (timezone === 'utc')
     Later.date.UTC();
   else if (timezone === 'localtime') {
@@ -324,9 +325,9 @@ SyncedCron._reset = function() {
 //   between multiple, potentially laggy and unsynced machines
 
 // From: https://github.com/bunkat/later/blob/master/src/core/setinterval.js
-SyncedCron._laterSetInterval = function(fn, sched) {
+SyncedCron._laterSetInterval = function(fn, sched, scheduleOffset) {
 
-  var t = SyncedCron._laterSetTimeout(scheduleTimeout, sched),
+  var t = SyncedCron._laterSetTimeout(scheduleTimeout, sched, scheduleOffset),
       done = false;
 
   /**
@@ -336,7 +337,7 @@ SyncedCron._laterSetInterval = function(fn, sched) {
   function scheduleTimeout(intendedAt) {
     if (!done) {
       fn(intendedAt);
-      t = SyncedCron._laterSetTimeout(scheduleTimeout, sched);
+      t = SyncedCron._laterSetTimeout(scheduleTimeout, sched, scheduleOffset);
     }
   }
 
@@ -355,7 +356,7 @@ SyncedCron._laterSetInterval = function(fn, sched) {
 };
 
 // From: https://github.com/bunkat/later/blob/master/src/core/settimeout.js
-SyncedCron._laterSetTimeout = function(fn, sched) {
+SyncedCron._laterSetTimeout = function(fn, sched, scheduleOffset) {
 
   var s = Later.schedule(sched), t;
   scheduleTimeout();
@@ -366,7 +367,7 @@ SyncedCron._laterSetTimeout = function(fn, sched) {
   * attempting to schedule the timeout again.
   */
   function scheduleTimeout() {
-    var now = Date.now(),
+    var now = Date.now() - scheduleOffset,
         next = s.next(2, now),
         diff = next[0].getTime() - now,
         intendedAt = next[0];

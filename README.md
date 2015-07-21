@@ -18,6 +18,8 @@ To write a cron job, give it a unique name, a schedule an a function to run like
 SyncedCron.add({
   name: 'Crunch some important numbers for the marketing department',
   timezone: 'Australia/Sydney',
+  // Optionally set a positive offset if you wish to 'snooze' a schedule
+  offset: 30 * 60 * 100,
   context: {
     userID: 'xyz'
   },

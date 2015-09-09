@@ -34,6 +34,29 @@ To start processing your jobs, somewhere in your project add:
 SyncedCron.start();
 ```
 
+If you want a job to run only once or a limited number of times, you can either remove it inside the job function or create a limited schedule:
+
+```javascript
+SyncedCron.add({
+  name: 'myJob',
+  schedule: function(parser) {
+    // EITHER set a limited schedule
+    var date = new Date;
+    date.setHours(date.getHours() + 12);
+
+    // (this Later.js object only contains a single event)
+    return parser.recur().on(date).fullDate();
+  }, 
+  job: function() {
+    // (do something)
+
+    // ... OR remove the job inside function
+    SyncedCron.remove('myJob');
+  }
+});
+```
+
+
 ### Advanced
 
 SyncedCron uses a collection called `cronHistory` to syncronize between processes. This also serves as a useful log of when jobs ran along with their output or error. A sample item looks like:

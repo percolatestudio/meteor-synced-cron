@@ -1,11 +1,11 @@
-# saucecode:timezoned-synced-cron
+# percolate:synced-cron
 
 A fork of [percolate:synced-cron](https://atmospherejs.com/percolate/synced-cron) and [trever:synced-cron](https://atmospherejs.com/trever/synced-cron).  Timezone implementation that successfully defaults to UTC and is backwards compatible to percolate:synced-cron.  A simple cron system for [Meteor](http://meteor.com). It supports syncronizing jobs between multiple processes. In other words, if you add a job that runs every hour and your deployment consists of multiple app servers, only one of the app servers will execute the job each time (whichever tries first).
 
 ## Installation
 
 ``` sh
-$ meteor add saucecode:timezoned-synced-cron
+$ meteor add percolate:synced-cron
 ```
 
 ## API
@@ -17,7 +17,7 @@ To write a cron job, give it a unique name, a schedule and a function to run lik
 ``` js
 SyncedCron.add({
   name: 'Crunch some important numbers for the marketing department',
-  timezone: 'Australia/Sydney',
+  timezone: 'utc',
   // Optionally set a positive offset if you wish to 'snooze' a schedule
   offset: 30 * 60 * 100,
   context: {

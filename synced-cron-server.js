@@ -151,6 +151,7 @@ Meteor.startup(function() {
 
 var scheduleEntry = function(entry) {
   if (!entry.timezone) {
+    // Default timezone to UTC, if not set
     entry.timezone = SyncedCron.options.timezone || 'utc';
   }
 

@@ -5,13 +5,13 @@ Package.describe({
   git: "https://github.com/percolatestudio/meteor-synced-cron.git"
 });
 
-Npm.depends({later: '1.1.6', timezone:'0.0.41'});
+Npm.depends({later: "1.1.6", timezone:"0.0.41"});
 
-Package.onUse(function(api) {
+Package.onUse(function (api) {
   api.versionsFrom('METEOR@0.9.1.1');
-  api.use(['underscore', 'check', 'mongo', 'logging'], 'server');
+  api.use(['underscore', 'check', 'mongo', 'logging'], "server");
   api.addFiles(['synced-cron-server.js'], 'server');
-  api.export(['SyncedCron'], 'server');
+  api.export('SyncedCron', 'server');
 });
 
 Package.onTest(function(api) {

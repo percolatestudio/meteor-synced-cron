@@ -20,18 +20,26 @@ SyncedCron.add({
   timezone: 'utc',
   // Optionally set a positive offset if you wish to 'snooze' a schedule
   offset: 30 * 60 * 100,
+  // Optional context to pass in to the job function
   context: {
-    userID: 'xyz'
+    // one or more key:value pairs. E.g.
+    // userID: 'fad94af3q4ho65h4'
   },
   schedule: function(parser) {
-    this.magic = true // Context is accesible here as this context.
+    // Context will be available as 'this'
+    console.log(this.userID);
+
     // parser is a later.parse object
     return parser.text('every 2 hours');
   },
   job: function() {
-    console.log(this.userID) // Context Object becomes this argument
-    console.log(this.magic) /
+    // Context will be available as 'this'
+    console.log(this.userID);
+
+    // Perform one or more actions
     var numbersCrunched = CrushSomeNumbers();
+
+    // Return the result
     return numbersCrunched;
   }
 });

@@ -20,7 +20,7 @@ SyncedCron.add({
   timezone: 'utc',
   // Optionally set a positive offset if you wish to 'snooze' a schedule
   offset: 30 * 60 * 100,
-  // Optional context to pass in to the job function
+  // Set an optional context to pass in to schedule and job functions
   context: {
     // one or more key:value pairs. E.g.
     // userID: 'fad94af3q4ho65h4'

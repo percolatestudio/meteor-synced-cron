@@ -407,5 +407,3 @@ SyncedCron._laterSetTimeout = function(fn, sched, scheduleOffset) {
   };
 
 };
-
-// ---------------------------------------------------------------------------

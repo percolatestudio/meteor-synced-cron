@@ -1,11 +1,11 @@
-# percolate:synced-cron
+# saucecode:timezoned-synced-cron
 
-A simple cron system for [Meteor](http://meteor.com). It supports syncronizing jobs between multiple processes. In other words, if you add a job that runs every hour and your deployment consists of multiple app servers, only one of the app servers will execute the job each time (whichever tries first).
+A fork of [percolate:synced-cron](https://atmospherejs.com/percolate/synced-cron) and [trever:synced-cron](https://atmospherejs.com/trever/synced-cron).  Timezone implementation that successfully defaults to UTC and is backwards compatible to percolate:synced-cron.  A simple cron system for [Meteor](http://meteor.com). It supports syncronizing jobs between multiple processes. In other words, if you add a job that runs every hour and your deployment consists of multiple app servers, only one of the app servers will execute the job each time (whichever tries first).
 
 ## Installation
 
 ``` sh
-$ meteor add percolate:synced-cron
+$ meteor add saucecode:timezoned-synced-cron
 ```
 
 ## API
@@ -17,11 +17,20 @@ To write a cron job, give it a unique name, a schedule and a function to run lik
 ``` js
 SyncedCron.add({
   name: 'Crunch some important numbers for the marketing department',
+  timezone: 'Australia/Sydney',
+  // Optionally set a positive offset if you wish to 'snooze' a schedule
+  offset: 30 * 60 * 100,
+  context: {
+    userID: 'xyz'
+  },
   schedule: function(parser) {
+    this.magic = true // Context is accesible here as this context.
     // parser is a later.parse object
     return parser.text('every 2 hours');
   },
   job: function() {
+    console.log(this.userID) // Context Object becomes this argument
+    console.log(this.magic) /
     var numbersCrunched = CrushSomeNumbers();
     return numbersCrunched;
   }
@@ -59,6 +68,7 @@ Call `SyncedCron.pause()` to stop all jobs without removing them.  The existing 
 
 To schedule a once off (i.e not recurring) event, create a job with a schedule like this `parser.recur().on(date).fullDate();`
 
+
 ### Configuration
 
 You can configure SyncedCron with the `config` method. Defaults are:
@@ -74,8 +84,10 @@ You can configure SyncedCron with the `config` method. Defaults are:
     // Name of collection to use for synchronisation and logging
     collectionName: 'cronHistory',
 
-    // Default to using localTime
-    utc: false,
+    // Default to localTime
+    // Options: 'utc', 'localtime', or specific timezones 'America/New_York'
+    // Will be applied to jobs with no timezone defined
+    timezone: 'utc',
 
     /*
       TTL in seconds for history records in collection to expire
@@ -91,6 +103,22 @@ You can configure SyncedCron with the `config` method. Defaults are:
     collectionTTL: 172800
   });
 ```
+
+### Timezone configuration
+``` js
+SyncedCron.add({
+  name: 'User Defined Job',
+  timezone: 'Australia/Sydney',
+  ...
+```
+
+#### Getting user timezone
+
+Automatically collect user timezone with [em0ney:jstz](https://atmospherejs.com/em0ney/jstz).
+
+Allow users to select timezones with [joshowens:timezone-picker](https://atmospherejs.com/joshowens/timezone-picker).
+
+For reference, read [Dealing with Timezones in JavaScript](http://joshowens.me/dealing-with-timezones-in-javascript/) by Josh Owens.
 
 ### Logging
 

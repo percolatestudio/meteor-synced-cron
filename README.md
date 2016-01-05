@@ -92,9 +92,14 @@ You can configure SyncedCron with the `config` method. Defaults are:
     // Name of collection to use for synchronisation and logging
     collectionName: 'cronHistory',
 
-    // Default to localTime
+    // (Deprecated) Set timezone to UTC
+    utc: true,
+
+    // Optionally specify timezone
+        // Default to localTime
     // Options: 'utc', 'localtime', or specific timezones 'America/New_York'
     // Will be applied to jobs with no timezone defined
+    // note: utc must not be true for this to work
     timezone: 'utc',
 
     /*

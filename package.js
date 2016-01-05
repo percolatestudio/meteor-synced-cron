@@ -10,7 +10,7 @@ Npm.depends({later: "1.1.6", timezone:"0.0.41"});
 Package.onUse(function (api) {
   api.versionsFrom('METEOR@0.9.1.1');
   api.use(['underscore', 'check', 'mongo', 'logging'], "server");
-  api.addFiles(['synced-cron-server.js'], 'server');
+  api.addFiles(['synced-cron-server.js'], "server");
   api.export('SyncedCron', 'server');
 });
 

@@ -22,19 +22,21 @@ SyncedCron.add({
   offset: 30 * 60 * 100,
   // Set an optional context to pass in to schedule and job functions
   context: {
-    // one or more key:value pairs. E.g.
-    // userID: 'fad94af3q4ho65h4'
+    // Set up a data context
+    // with one or more key:value pairs.
+    //  E.g.
+    userId: 'fad94af3q4ho65h4'
   },
   schedule: function(parser) {
-    // Context will be available as 'this'
-    console.log(this.userID);
+    // Context object will be available as 'this'
+    console.log(this.userId);
 
     // parser is a later.parse object
     return parser.text('every 2 hours');
   },
   job: function() {
     // Context will be available as 'this'
-    console.log(this.userID);
+    console.log(this.userId);
 
     // Perform one or more actions
     var numbersCrunched = CrushSomeNumbers();
@@ -91,9 +93,6 @@ You can configure SyncedCron with the `config` method. Defaults are:
 
     // Name of collection to use for synchronisation and logging
     collectionName: 'cronHistory',
-
-    // (Deprecated) Set timezone to UTC
-    utc: true,
 
     // Optionally specify timezone
         // Default to localTime

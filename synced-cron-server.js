@@ -24,9 +24,12 @@ SyncedCron = {
   }
 }
 
+// Placeholder for date/timezone related functions
+SyncedCron.date = {};
+
 Later = Npm.require('later');
 tz = Npm.require('timezone');
-Later.date.timezone = function(timezone) {
+SyncedCron.date.timezone = function(timezone) {
   var _tz;
 
   // Workaround for UTC which is false
@@ -35,39 +38,39 @@ Later.date.timezone = function(timezone) {
   }
 
   _tz = Npm.require('timezone/' + timezone);
-  Later.date.build = function(Y, M, D, h, m, s) {
+  SyncedCron.date.build = function(Y, M, D, h, m, s) {
     return new Date(tz([Y, M + 1, D, h, m, s], _tz, timezone));
   };
 
-  Later.date.getYear = function() {
+  SyncedCron.date.getYear = function() {
     return +tz(this, '%Y', _tz, timezone);
   };
 
-  Later.date.getMonth = function() {
+  SyncedCron.date.getMonth = function() {
     return +tz(this, '%-m', _tz, timezone) - 1;
   };
 
-  Later.date.getDate = function() {
+  SyncedCron.date.getDate = function() {
     return +tz(this, '%-d', _tz, timezone);
   };
 
-  Later.date.getDay = function() {
+  SyncedCron.date.getDay = function() {
     return +tz(this, '%-w', _tz, timezone);
   };
 
-  Later.date.getHour = function() {
+  SyncedCron.date.getHour = function() {
     return +tz(this, '%-H', _tz, timezone);
   };
 
-  Later.date.getMin = function() {
+  SyncedCron.date.getMin = function() {
     return +tz(this, '%-M', _tz, timezone);
   };
 
-  Later.date.getSec = function() {
+  SyncedCron.date.getSec = function() {
     return +tz(this, '%-S', _tz, timezone);
   };
 
-  return Later.date.isUTC = false;
+  return SyncedCron.date.isUTC = false;
 };
 
 /*
@@ -129,9 +132,9 @@ Meteor.startup(function() {
   else if (options.timezone === 'localtime') {
     Later.date.localTime();
   } else if (typeof options.timezone === 'function') {
-    Later.date.timezone(options.timezone.apply(options))
+    SyncedCron.date.timezone(options.timezone.apply(options))
   } else if (typeof options.timezone === 'string') {
-    Later.date.timezone(options.timezone);
+    SyncedCron.date.timezone(options.timezone);
   } else {
     Later.date.localTime();
   };
@@ -250,9 +253,9 @@ SyncedCron._setTimezone = function(timezone, entry) {
   else if (timezone === 'localtime') {
     Later.date.localTime();
   } else if (typeof timezone === 'function'){
-    Later.date.timezone(timezone.apply(entry.context))
+    SyncedCron.date.timezone(timezone.apply(entry.context))
   } else if (typeof timezone === 'string') {
-    Later.date.timezone(timezone);
+    SyncedCron.date.timezone(timezone);
   } else {
     Later.date.localTime();
   };

@@ -85,7 +85,7 @@ function createLogger(prefix) {
   check(prefix, String);
 
   // Return noop if logging is disabled.
-  if (SyncedCron.options.log === false) {
+  if(SyncedCron.options.log === false) {
     return function() {};
   }
 
@@ -95,7 +95,7 @@ function createLogger(prefix) {
 
     var logger = SyncedCron.options && SyncedCron.options.logger;
 
-    if (logger && _.isFunction(logger)) {
+    if(logger && _.isFunction(logger)) {
 
       logger({
         level: level,
@@ -241,7 +241,6 @@ SyncedCron.stop = function() {
   _.each(this._entries, function(entry, name) {
     SyncedCron.remove(name);
   });
-
   this.running = false;
 }
 
@@ -278,7 +277,7 @@ SyncedCron._entryWrapper = function(entry) {
     // this job.
     try {
       jobHistory._id = self._collection.insert(jobHistory);
-    } catch (e) {
+    } catch(e) {
       // http://www.mongodb.org/about/contributors/error-codes/
       // 11000 == duplicate key error
       if (e.name === 'MongoError' && e.code === 11000) {
@@ -301,7 +300,7 @@ SyncedCron._entryWrapper = function(entry) {
           result: output
         }
       });
-    } catch (e) {
+    } catch(e) {
       log.info('Exception "' + entry.name +'" ' + e.stack);
       self._collection.update({_id: jobHistory._id}, {
         $set: {
@@ -339,7 +338,7 @@ SyncedCron._laterSetInterval = function(fn, sched, scheduleOffset) {
   * interval.
   */
   function scheduleTimeout(intendedAt) {
-    if (!done) {
+    if(!done) {
       fn(intendedAt);
       t = SyncedCron._laterSetTimeout(scheduleTimeout, sched, scheduleOffset);
     }
@@ -383,7 +382,7 @@ SyncedCron._laterSetTimeout = function(fn, sched, scheduleOffset) {
         intendedAt = next[0];
 
     // minimum time to fire is one second, use next occurrence instead
-    if (diff < 1000) {
+    if(diff < 1000) {
       diff = next[1].getTime() - now;
       intendedAt = next[1];
     }

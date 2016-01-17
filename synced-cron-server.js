@@ -123,11 +123,6 @@ Meteor.startup(function() {
   // Don't allow TTL less than 5 minutes so we don't break synchronization
   var minTTL = 300;
 
-  // Preserve backwards compatibility by checking for options.utc
-  // TODO: consider deprecating the 'utc' option and using only 'timezone'
-  if (options.utc)
-    options.timezone = "utc";
-
   // Use UTC or localtime for evaluating schedules
   if (options.timezone === 'utc')
     Later.date.UTC();

@@ -35,7 +35,7 @@ SyncedCron.add({
     return parser.text('every 2 hours');
   },
   job: function() {
-    // Context will be available as 'this'
+    // Context object will be available as 'this'
     console.log(this.userId);
 
     // Perform one or more actions

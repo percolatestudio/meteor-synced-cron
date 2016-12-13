@@ -209,7 +209,7 @@ SyncedCron._entryWrapper = function(entry) {
         return;
       }
 
-      throw e;
+      console.error(e);
     };
 
     // run and record the job

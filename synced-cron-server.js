@@ -209,7 +209,7 @@ SyncedCron._entryWrapper = function(entry) {
         return;
       }
 
-      console.error(e);
+      throw e;
     };
 
     // run and record the job
@@ -225,11 +225,11 @@ SyncedCron._entryWrapper = function(entry) {
         }
       });
     } catch(e) {
-      log.info('Exception "' + entry.name +'" ' + ((e && e.stack) ? e.stack : e));
+      log.info('Exception "' + entry.name +'" ' + (e && e.stack || e));
       self._collection.update({_id: jobHistory._id}, {
         $set: {
           finishedAt: new Date(),
-          error: (e && e.stack) ? e.stack : e
+          error: e && e.stack || e
         }
       });
     }
@@ -266,7 +266,7 @@ SyncedCron._laterSetInterval = function(fn, sched) {
       try {
         fn(intendedAt);
       } catch(e) {
-        log.info('Exception running scheduled job ' + ((e && e.stack) ? e.stack : e));
+        log.info('Exception running scheduled job ' + (e && e.stack || e));
       }
 
       t = SyncedCron._laterSetTimeout(scheduleTimeout, sched);

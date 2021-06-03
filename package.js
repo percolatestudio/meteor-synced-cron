@@ -10,12 +10,12 @@ Npm.depends({later: "1.1.6"});
 Package.onUse(function (api) {
   api.versionsFrom('METEOR@1.3');
   api.use(['underscore', 'check', 'mongo', 'logging'], 'server');
-  api.add_files(['synced-cron-server.js'], "server");
+  api.addFiles(['synced-cron-server.js'], "server");
   api.export('SyncedCron', 'server');
 });
 
 Package.onTest(function (api) {
   api.use(['check', 'mongo'], 'server');
   api.use(['tinytest', 'underscore', 'logging']);
-  api.add_files(['synced-cron-server.js', 'synced-cron-tests.js'], ['server']);
+  api.addFiles(['synced-cron-server.js', 'synced-cron-tests.js'], ['server']);
 });

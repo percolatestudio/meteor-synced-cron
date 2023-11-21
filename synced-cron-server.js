@@ -199,6 +199,14 @@ SyncedCron._entryWrapper = function(entry) {
     var jobHistory;
 
     if (entry.persist) {
+      
+      // Wait for previous job to finish
+      let previousRunningJob = self._collection.findOne({"name": entry.name, "finishedAt": {$exists: false}}, {sort: {intendedAt: -1}});
+      if(previousRunningJob){
+        log.info('Previous "' + entry.name + '" job not finished.');
+        return;
+      }
+      
       jobHistory = {
         intendedAt: intendedAt,
         name: entry.name,

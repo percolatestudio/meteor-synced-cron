@@ -12,9 +12,10 @@ var TestEntry = {
   }
 };
 
-Tinytest.add('Syncing works', function(test) {
-  SyncedCron._reset();
-  test.equal(SyncedCron._collection.find().count(), 0);
+Tinytest.addAsync('Syncing works', async function(test) {
+  await SyncedCron._reset();
+  const count = await SyncedCron._collection.find().countAsync()
+  test.equal(count, 0);
 
   // added the entry ok
   SyncedCron.add(TestEntry);
@@ -24,20 +25,22 @@ Tinytest.add('Syncing works', function(test) {
   var intendedAt = new Date(); //whatever
 
   // first run
-  SyncedCron._entryWrapper(entry)(intendedAt);
-  test.equal(SyncedCron._collection.find().count(), 1);
-  var jobHistory1 = SyncedCron._collection.findOne();
+  await SyncedCron._entryWrapper(entry)(intendedAt);
+  const count2 = await SyncedCron._collection.find().countAsync();
+  test.equal(count2, 1);
+  var jobHistory1 = await SyncedCron._collection.findOneAsync();
   test.equal(jobHistory1.result, 'ran');
 
   // second run
-  SyncedCron._entryWrapper(entry)(intendedAt);
-  test.equal(SyncedCron._collection.find().count(), 1); // should still be 1
-  var jobHistory2 = SyncedCron._collection.findOne();
+  await SyncedCron._entryWrapper(entry)(intendedAt);
+  const count3 = await SyncedCron._collection.find().countAsync();
+  test.equal(count3, 1); // should still be 1
+  var jobHistory2 = await SyncedCron._collection.findOneAsync();
   test.equal(jobHistory1._id, jobHistory2._id);
 });
 
-Tinytest.add('Exceptions work', function(test) {
-  SyncedCron._reset();
+Tinytest.addAsync('Exceptions work', async function(test) {
+  await SyncedCron._reset();
   SyncedCron.add(_.extend({}, TestEntry, {
       job: function() {
         throw new Meteor.Error('Haha, gotcha!');
@@ -49,16 +52,16 @@ Tinytest.add('Exceptions work', function(test) {
   var intendedAt = new Date(); //whatever
 
   // error without result
-  SyncedCron._entryWrapper(entry)(intendedAt);
-  test.equal(SyncedCron._collection.find().count(), 1);
-  var jobHistory1 = SyncedCron._collection.findOne();
+  await SyncedCron._entryWrapper(entry)(intendedAt);
+  test.equal(await SyncedCron._collection.find().countAsync(), 1);
+  var jobHistory1 = await SyncedCron._collection.findOneAsync();
   test.equal(jobHistory1.result, undefined);
   test.matches(jobHistory1.error, /Haha, gotcha/);
 });
 
-Tinytest.add('SyncedCron.nextScheduledAtDate works', function(test) {
-  SyncedCron._reset();
-  test.equal(SyncedCron._collection.find().count(), 0);
+Tinytest.addAsync('SyncedCron.nextScheduledAtDate works', async function(test) {
+  await SyncedCron._reset();
+  test.equal(await SyncedCron._collection.find().countAsync(), 0);
 
   // addd 2 entries
   SyncedCron.add(TestEntry);
@@ -82,9 +85,10 @@ Tinytest.add('SyncedCron.nextScheduledAtDate works', function(test) {
 });
 
 // Tests SyncedCron.remove in the process
-Tinytest.add('SyncedCron.stop works', function(test) {
-  SyncedCron._reset();
-  test.equal(SyncedCron._collection.find().count(), 0);
+Tinytest.addAsync('SyncedCron.stop works', async function(test) {
+  await SyncedCron._reset();
+  const count = await SyncedCron._collection.find().countAsync();
+  test.equal(count, 0);
 
   // addd 2 entries
   SyncedCron.add(TestEntry);
@@ -106,9 +110,9 @@ Tinytest.add('SyncedCron.stop works', function(test) {
   test.equal(_.keys(SyncedCron._entries).length, 0);
 });
 
-Tinytest.add('SyncedCron.pause works', function(test) {
-  SyncedCron._reset();
-  test.equal(SyncedCron._collection.find().count(), 0);
+Tinytest.addAsync('SyncedCron.pause works', async function(test) {
+  await SyncedCron._reset();
+  test.equal(await SyncedCron._collection.find().countAsync(), 0);
 
   // addd 2 entries
   SyncedCron.add(TestEntry);
@@ -138,10 +142,10 @@ Tinytest.add('SyncedCron.pause works', function(test) {
 });
 
 // Tests SyncedCron.remove in the process
-Tinytest.add('SyncedCron.add starts by it self when running', function(test) {
-  SyncedCron._reset();
+Tinytest.addAsync('SyncedCron.add starts by it self when running', async function(test) {
+  await SyncedCron._reset();
 
-  test.equal(SyncedCron._collection.find().count(), 0);
+  test.equal(await SyncedCron._collection.find().countAsync(), 0);
   test.equal(SyncedCron.running, false);
   Log._intercept(2);
 
@@ -163,8 +167,8 @@ Tinytest.add('SyncedCron.add starts by it self when running', function(test) {
   test.equal(_.keys(SyncedCron._entries).length, 0);
 });
 
-Tinytest.add('SyncedCron.config can customize the options object', function(test) {
-  SyncedCron._reset();
+Tinytest.addAsync('SyncedCron.config can customize the options object', async function(test) {
+  await SyncedCron._reset();
 
   SyncedCron.config({
     log: false,
@@ -179,8 +183,8 @@ Tinytest.add('SyncedCron.config can customize the options object', function(test
   test.equal(SyncedCron.options.collectionTTL, 0);
 });
 
-Tinytest.addAsync('SyncedCron can log to injected logger', function(test, done) {
-  SyncedCron._reset();
+Tinytest.addAsync('SyncedCron can log to injected logger', async function(test, done) {
+  await SyncedCron._reset();
 
   var logger = function() {
     test.isTrue(true);
@@ -197,8 +201,8 @@ Tinytest.addAsync('SyncedCron can log to injected logger', function(test, done) 
   SyncedCron.options.logger = null;
 });
 
-Tinytest.addAsync('SyncedCron should pass correct arguments to logger', function(test, done) {
-  SyncedCron._reset();
+Tinytest.addAsync('SyncedCron should pass correct arguments to logger', async function(test, done) {
+  await SyncedCron._reset();
 
   var logger = function(opts) {
     test.include(opts, 'level');
@@ -229,14 +233,14 @@ Tinytest.add('Single time schedules don\'t break', function(test) {
 });
 
 
-Tinytest.add('Do not persist when flag is set to false', function (test) {
-  SyncedCron._reset();
+Tinytest.addAsync('Do not persist when flag is set to false', async function (test) {
+  await SyncedCron._reset();
 
   var testEntryNoPersist = _.extend({}, TestEntry, {persist: false});
 
   SyncedCron.add(testEntryNoPersist);
 
   const now = new Date();
-  SyncedCron._entryWrapper(testEntryNoPersist)(now);
-  test.equal(SyncedCron._collection.find().count(), 0);
+  await SyncedCron._entryWrapper(testEntryNoPersist)(now);
+  test.equal(await SyncedCron._collection.find().countAsync(), 0);
 });

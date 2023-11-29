@@ -1,6 +1,6 @@
 Package.describe({
   summary: "Define and run scheduled jobs across multiple servers.",
-  version: "1.5.2",
+  version: "2.0.0",
   name: "percolate:synced-cron",
   git: "https://github.com/percolatestudio/meteor-synced-cron.git"
 });
@@ -8,7 +8,7 @@ Package.describe({
 Npm.depends({later: "1.1.6"});
 
 Package.onUse(function (api) {
-  api.versionsFrom('METEOR@1.3');
+  api.versionsFrom('METEOR@2.8.0');
   api.use(['underscore', 'check', 'mongo', 'logging'], 'server');
   api.addFiles(['synced-cron-server.js'], "server");
   api.export('SyncedCron', 'server');

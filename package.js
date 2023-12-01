@@ -9,6 +9,7 @@ Npm.depends({later: "1.1.6"});
 
 Package.onUse(function (api) {
   api.versionsFrom('METEOR@2.8.0');
+  api.use("ecmascript");
   api.use(['underscore', 'check', 'mongo', 'logging'], 'server');
   api.addFiles(['synced-cron-server.js'], "server");
   api.export('SyncedCron', 'server');

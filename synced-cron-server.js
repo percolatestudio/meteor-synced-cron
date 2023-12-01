@@ -87,11 +87,11 @@ Meteor.startup(function() {
 
   // collection holding the job history records
   SyncedCron._collection = new Mongo.Collection(options.collectionName);
-  SyncedCron._collection._ensureIndex({intendedAt: 1, name: 1}, {unique: true});
+  SyncedCron._collection.createIndex({intendedAt: 1, name: 1}, {unique: true});
 
   if (options.collectionTTL) {
     if (options.collectionTTL > minTTL)
-      SyncedCron._collection._ensureIndex({startedAt: 1 },
+      SyncedCron._collection.createIndex({startedAt: 1 },
         { expireAfterSeconds: options.collectionTTL } );
     else
       log.warn('Not going to use a TTL that is shorter than:' + minTTL);

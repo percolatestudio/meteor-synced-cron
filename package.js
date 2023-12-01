@@ -17,6 +17,7 @@ Package.onUse(function (api) {
 
 Package.onTest(function (api) {
   api.use(['check', 'mongo'], 'server');
+  api.use("ecmascript");
   api.use(['tinytest', 'underscore', 'logging']);
   api.addFiles(['synced-cron-server.js', 'synced-cron-tests.js'], ['server']);
 });

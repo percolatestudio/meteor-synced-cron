@@ -87,11 +87,11 @@ Meteor.startup(function() {
 
   // collection holding the job history records
   SyncedCron._collection = new Mongo.Collection(options.collectionName);
-  SyncedCron._collection._ensureIndex({intendedAt: 1, name: 1}, {unique: true});
+  SyncedCron._collection.createIndex({intendedAt: 1, name: 1}, {unique: true});
 
   if (options.collectionTTL) {
     if (options.collectionTTL > minTTL)
-      SyncedCron._collection._ensureIndex({startedAt: 1 },
+      SyncedCron._collection.createIndex({startedAt: 1 },
         { expireAfterSeconds: options.collectionTTL } );
     else
       log.warn('Not going to use a TTL that is shorter than:' + minTTL);
@@ -140,7 +140,7 @@ SyncedCron.start = function() {
 
   Meteor.startup(function() {
     // Schedule each job with later.js
-    _.each(self._entries, function(entry) {
+    _.each(self._entries, entry => {
       scheduleEntry(entry);
     });
     self.running = true;
@@ -192,7 +192,7 @@ SyncedCron.stop = function() {
 SyncedCron._entryWrapper = function(entry) {
   var self = this;
 
-  return function(intendedAt) {
+  return async function(intendedAt) {
     intendedAt = new Date(intendedAt.getTime());
     intendedAt.setMilliseconds(0);
 
@@ -208,7 +208,7 @@ SyncedCron._entryWrapper = function(entry) {
       // If we have a dup key error, another instance has already tried to run
       // this job.
       try {
-        jobHistory._id = self._collection.insert(jobHistory);
+        jobHistory._id = await self._collection.insertAsync(jobHistory);
       } catch(e) {
         // http://www.mongodb.org/about/contributors/error-codes/
         // 11000 == duplicate key error
@@ -224,11 +224,11 @@ SyncedCron._entryWrapper = function(entry) {
     // run and record the job
     try {
       log.info('Starting "' + entry.name + '".');
-      var output = entry.job(intendedAt,entry.name); // <- Run the actual job
+      var output = await entry.job(intendedAt,entry.name); // <- Run the actual job
 
       log.info('Finished "' + entry.name + '".');
       if(entry.persist) {
-        self._collection.update({_id: jobHistory._id}, {
+        await self._collection.updateAsync({_id: jobHistory._id}, {
           $set: {
             finishedAt: new Date(),
             result: output
@@ -238,7 +238,7 @@ SyncedCron._entryWrapper = function(entry) {
     } catch(e) {
       log.info('Exception "' + entry.name +'" ' + ((e && e.stack) ? e.stack : e));
       if(entry.persist) {
-        self._collection.update({_id: jobHistory._id}, {
+        await self._collection.updateAsync({_id: jobHistory._id}, {
           $set: {
             finishedAt: new Date(),
             error: (e && e.stack) ? e.stack : e
@@ -250,9 +250,9 @@ SyncedCron._entryWrapper = function(entry) {
 }
 
 // for tests
-SyncedCron._reset = function() {
+SyncedCron._reset = async function() {
   this._entries = {};
-  this._collection.remove({});
+  await this._collection.removeAsync({});
   this.running = false;
 }
 
@@ -274,10 +274,10 @@ SyncedCron._laterSetInterval = function(fn, sched) {
   * Executes the specified function and then sets the timeout for the next
   * interval.
   */
-  function scheduleTimeout(intendedAt) {
+  async function scheduleTimeout(intendedAt) {
     if(!done) {
       try {
-        fn(intendedAt);
+        await fn(intendedAt);
       } catch(e) {
         log.info('Exception running scheduled job ' + ((e && e.stack) ? e.stack : e));
       }

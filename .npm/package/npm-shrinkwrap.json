@@ -4,7 +4,7 @@
     "later": {
       "version": "1.1.6",
       "resolved": "https://registry.npmjs.org/later/-/later-1.1.6.tgz",
-      "integrity": "sha1-Wvg61IJjk8VvEO4u4ekQlkRb5Os="
+      "integrity": "sha512-6+yTV1CnjAcGCUOjnu7g7Buj3KunR/Fv6goT4Qjbf7Nf85RInVDMJizYljS5/9XkgmCjiexKSFIr1s5rH1PYPQ=="
     }
   }
 }

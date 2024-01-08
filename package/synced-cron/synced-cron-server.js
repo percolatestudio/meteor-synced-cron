@@ -329,7 +329,7 @@ SyncedCron._laterSetTimeout = function (fn, sched) {
 
     // don't schedlue another occurence if no more exist synced-cron#41
     if (!next[0]) return;
-
+    
     let diff = next[0].getTime() - now;
     let intendedAt = next[0];
 

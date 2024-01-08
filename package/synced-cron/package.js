@@ -9,7 +9,7 @@ Package.describe({
 Npm.depends({ "@breejs/later": "4.1.0" });
 
 Package.onUse(function (api) {
-  api.versionsFrom("METEOR@3.0-alpha.17");
+  api.versionsFrom("3.0-beta.0");
 
   api.use('ecmascript@0.16.7||0.16.8-alpha300.17');
   
@@ -24,8 +24,8 @@ Package.onUse(function (api) {
 });
 
 Package.onTest(function (api) {
-  api.use(["check", "mongo"], "server");
-  api.use(["tinytest", "logging"]);
-
-  api.addFiles(["synced-cron-server.js", "synced-cron-tests.js"], ["server"]);
+  api.use([
+    // 'meteortesting:mocha@3.1.0-beta300.0',
+    'quave:synced-cron@2.0.2'
+  ])
 });
